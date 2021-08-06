@@ -1,17 +1,28 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+import CurrencyInput from 'react-currency-input'
 
-const percentages = ['5%', '10%', '15%', '25%', '50%']
+const formatNumber = num =>
+  num.toLocaleString('en-us', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 
 function App() {
-  const [bill, setBill] = useState(0)
+  const [state, setState] = useState({
+    bill: 0,
+    tipAmount: 0,
+    percentage: 0,
+  })
 
-  const onChange = e => {
-    const re = /^[0-9\b]+$/
+  useEffect(() => console.log('Current State:', state), [state])
 
-    if (e.target.value === '' || re.test(e.target.value)) {
-      setBill(e.target.value)
-    }
+  const updateTip = tip => {
+    setState({
+      ...state,
+      percentage: tip,
+      tipAmount: formatNumber(state.bill * tip),
+    })
   }
 
   return (
@@ -21,21 +32,46 @@ function App() {
         <br />
         tter
       </h1>
-      <div className="container">
-        <label htmlFor="bill">
-          Bill
-          <input
-            id="bill"
-            value={bill}
-            name="bill"
-            type="text"
-            onChange={onChange}
-          />
-        </label>
-        {percentages.map(i => (
-          <button>{i}</button>
-        ))}
-      </div>
+      <label htmlFor="bill">
+        Bill
+        <CurrencyInput
+          value={state.bill}
+          name="bill"
+          id="bill"
+          autoFocus="true"
+          onChangeEvent={e => setState({ ...state, bill: e.target.value })}
+        />
+      </label>
+      <input
+        id="five-percent"
+        type="button"
+        value="5%"
+        onClick={() => updateTip(0.05)}
+      />
+      <input
+        id="ten-percent"
+        type="button"
+        value="10%"
+        onClick={() => updateTip(0.1)}
+      />
+      <input
+        id="fifteen-percent"
+        type="button"
+        value="15%"
+        onClick={() => updateTip(0.15)}
+      />
+      <input
+        id="twenty-five-percent"
+        type="button"
+        value="25%"
+        onClick={() => updateTip(0.25)}
+      />
+      <input
+        id="fifty-percent"
+        type="button"
+        value="50%"
+        onClick={() => updateTip(0.5)}
+      />
     </div>
   )
 }
